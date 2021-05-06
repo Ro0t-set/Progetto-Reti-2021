@@ -9,10 +9,25 @@ def get_username(request):
         return "no logged"
 
 
-@login.login_required
 def index(request, page):
     return page.format(username=get_username(request))
 
 
-def login(request):
-    pass
+def info(request, page):
+    return page.format(username=get_username(request))
+
+
+def ambulatori(request, page):
+    return page.format(username=get_username(request))
+
+
+def referti(request, page):
+    return page.format(username=get_username(request))
+
+
+def turni(request, page):
+    return page.format(username=get_username(request))
+
+
+def appuntamenti(request, page):
+    return page.format(username=get_username(request))
