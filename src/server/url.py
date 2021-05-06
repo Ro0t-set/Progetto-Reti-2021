@@ -1,7 +1,5 @@
 import views
 
-# url name, file, file function, login required
-
 urlpatterns = [
     ("", "html/index.html", views.index),
     ("info", "html/info.html", views.info),
