@@ -1,6 +1,6 @@
 import sys, signal
 import http.server
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler
 import socketserver
 import url
 
@@ -16,12 +16,41 @@ else:
 # ThreadingTCPServer per gestire più richieste
 
 class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
+
+    def do_HEAD(self):
+        print("send header")
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
-        message = "404"
-        self.wfile.write(bytes(message, "utf8"))
+
+    def do_AUTHHEAD(self):
+        print("send header")
+        self.send_response(401)
+        self.send_header('WWW-Authenticate', 'Basic realm=\"Test\"')
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+    def do_GET(self):
+        print(self.headers.get('Authorization'))
+
+        if self.headers.get('Authorization') is None:
+            self.do_AUTHHEAD()
+            pass
+
+        elif self.headers.get('Authorization') == 'Basic Y2lhbzpjaWFv':
+            self.do_HEAD()
+            sub_path = self.path[1:]
+            for urlName in url.urlpatterns:
+                if urlName[0] == sub_path:
+                    urlName[2](self)
+                    self.wfile.write(bytes(open(urlName[1]).read(), "utf8"))  # legge l'url e cerca nella cartella
+                    break
+
+        else:
+            self.do_AUTHHEAD()
+            pass
+
+
 
 
 server = socketserver.ThreadingTCPServer(('', port), handler)

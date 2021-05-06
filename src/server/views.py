@@ -1,6 +1,18 @@
-def index():
-    print("a")
+import login.login_required as login
 
 
-def login():
+@login.login_required
+def index(request):
+    print(request.headers)
+
+
+
+def login(request):
     pass
+
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()

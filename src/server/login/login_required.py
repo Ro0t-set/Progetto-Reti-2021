@@ -1,15 +1,18 @@
+from functools import wraps
+
 login_status = 0
 
 
 def login_required(func):
-    def wrapper():
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         global login_status
         if login_status == 0:
             login_status = 1
         else:
             login_status = 0
         print(login_status)
-        func()
+        func(*args, **kwargs)
     return wrapper
 
 
