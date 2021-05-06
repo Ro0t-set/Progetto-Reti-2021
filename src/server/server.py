@@ -30,10 +30,15 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         sub_path = self.path[1:]
         page_found = False
-        for urlName in url.urlpatterns:
-            if urlName[0] == sub_path:
-                page = open(urlName[1]).read()
-                page = urlName[2](self, page)
+        for url_name in url.urlpatterns:
+            if url_name[0] == sub_path:
+                try:
+                    page = open(url_name[1]).read()
+                except:
+                    url_name[2](self, url_name[1])
+                    break
+
+                page = url_name[2](self, page)
                 self.do_HEAD()
                 if page is not None:
                     self.wfile.write(bytes(page, "utf8"))  # legge l'url e cerca nella cartella
