@@ -1,8 +1,7 @@
 import views
 
-# url name, file, file function
+# url name, file, file function, login required
 
 urlpatterns = [
-    ("home", "html/index.html", views.index),
-    ("login", "html/login.html", views.login)
+    ("home", "html/index.html", views.index, True)
 ]

@@ -42,8 +42,8 @@ class handler(BaseHTTPRequestHandler):
             sub_path = self.path[1:]
             for urlName in url.urlpatterns:
                 if urlName[0] == sub_path:
-                    urlName[2](self)
-                    self.wfile.write(bytes(open(urlName[1]).read(), "utf8"))  # legge l'url e cerca nella cartella
+                    page = open(urlName[1]).read()
+                    self.wfile.write(bytes(urlName[2](self, page), "utf8"))  # legge l'url e cerca nella cartella
                     break
 
         else:

@@ -1,18 +1,7 @@
-import login.login_required as login
-
-
-@login.login_required
-def index(request):
-    print(request.headers)
-
+import random
+def index(request, page):
+    return page.format(username= request.headers.get('Authorization').split(' ')[0])
 
 
 def login(request):
     pass
-
-
-def main():
-    pass
-
-if __name__ == "__main__":
-    main()
