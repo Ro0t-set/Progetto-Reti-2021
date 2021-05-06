@@ -17,7 +17,6 @@ else:
 class handler(BaseHTTPRequestHandler):
 
     def do_HEAD(self):
-        print("send header")
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
@@ -44,9 +43,6 @@ class handler(BaseHTTPRequestHandler):
         if not page_found:
             self.do_HEAD()
             self.wfile.write(bytes("404", "utf8"))
-
-
-
 
 
 server = socketserver.ThreadingTCPServer(('', port), handler)
