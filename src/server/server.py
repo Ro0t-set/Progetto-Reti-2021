@@ -1,5 +1,4 @@
 import sys, signal
-import http.server
 from http.server import BaseHTTPRequestHandler
 import socketserver
 import url
@@ -24,31 +23,28 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_AUTHHEAD(self):
-        print("send header")
         self.send_response(401)
         self.send_header('WWW-Authenticate', 'Basic realm=\"Test\"')
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
     def do_GET(self):
-        print(self.headers.get('Authorization'))
+        sub_path = self.path[1:]
+        page_found = False
+        for urlName in url.urlpatterns:
+            if urlName[0] == sub_path:
+                page = open(urlName[1]).read()
+                page = urlName[2](self, page)
+                self.do_HEAD()
+                if page is not None:
+                    self.wfile.write(bytes(page, "utf8"))  # legge l'url e cerca nella cartella
+                    page_found = True
+                break
 
-        if self.headers.get('Authorization') is None:
-            self.do_AUTHHEAD()
-            pass
-
-        elif self.headers.get('Authorization') == 'Basic Y2lhbzpjaWFv':
+        if not page_found:
             self.do_HEAD()
-            sub_path = self.path[1:]
-            for urlName in url.urlpatterns:
-                if urlName[0] == sub_path:
-                    page = open(urlName[1]).read()
-                    self.wfile.write(bytes(urlName[2](self, page), "utf8"))  # legge l'url e cerca nella cartella
-                    break
+            self.wfile.write(bytes("404", "utf8"))
 
-        else:
-            self.do_AUTHHEAD()
-            pass
 
 
 
