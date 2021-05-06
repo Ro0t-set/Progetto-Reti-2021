@@ -6,8 +6,8 @@ def get_username(request):
     if request.headers.get('Authorization') is not None:
         return str(base64.b64decode(request.headers.get('Authorization').split(' ')[1])).split(':')[0][2:] + \
                """
-        <a href="http://username:password@localhost:8080">LogOut</a>
-        """
+        <a href="http://username:password@{host}">LogOut</a>
+        """.format(host = request.headers.get('Host'))
     else:
         return "no logged"
 
@@ -37,10 +37,3 @@ def turni(request, page):
 @login.login_required
 def appuntamenti(request, page):
     return page.format(username=get_username(request))
-
-def info_pdf(request, file):
-    request.send_response(200)
-    request.send_header('Content-type', 'pdf')
-    request.end_headers()
-    with open(file, 'rb') as file:
-        request.wfile.write(file.read())

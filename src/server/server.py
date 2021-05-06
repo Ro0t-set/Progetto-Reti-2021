@@ -1,7 +1,11 @@
+import http
 import sys, signal
 from http.server import BaseHTTPRequestHandler
 import socketserver
 import url
+
+# Cartella contente tutti i media della pagina, non vengono effettuati controlli
+MEDIA = "meida"
 
 # Legge il numero della porta dalla riga di comando
 if sys.argv[1:]:
@@ -9,12 +13,27 @@ if sys.argv[1:]:
 else:
     port = 8080
 
+class Handler(http.server.SimpleHTTPRequestHandler):
 
-# Nota ForkingTCPServer non funziona su Windows come os.fork ()
-# La funzione non è disponibile su quel sistema operativo. Invece dobbiamo usare il
-# ThreadingTCPServer per gestire più richieste
+    def html(self):
+        sub_path = self.path[1:]
+        page_found = False
+        for url_name in url.urlpatterns:
+            if url_name[0] == sub_path:
+                page = open(url_name[1]).read()
+                page = url_name[2](self, page)
+                self.do_HEAD()
+                if page is not None:
+                    self.wfile.write(bytes(page, "utf8"))  # legge l'url e cerca nella cartella
+                    page_found = True
+                break
 
-class handler(BaseHTTPRequestHandler):
+        if not page_found:
+            self.do_HEAD()
+            self.wfile.write(bytes("404", "utf8"))
+
+    def media(self):
+        http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_HEAD(self):
         self.send_response(200)
@@ -28,29 +47,13 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        sub_path = self.path[1:]
-        page_found = False
-        for url_name in url.urlpatterns:
-            if url_name[0] == sub_path:
-                try:
-                    page = open(url_name[1]).read()
-                except:
-                    url_name[2](self, url_name[1])
-                    break
-
-                page = url_name[2](self, page)
-                self.do_HEAD()
-                if page is not None:
-                    self.wfile.write(bytes(page, "utf8"))  # legge l'url e cerca nella cartella
-                    page_found = True
-                break
-
-        if not page_found:
-            self.do_HEAD()
-            self.wfile.write(bytes("404", "utf8"))
+        if self.path[:6] == "/media":
+            self.media()
+        else:
+            self.html()
 
 
-server = socketserver.ThreadingTCPServer(('', port), handler)
+server = socketserver.ThreadingTCPServer(('', port), Handler)
 
 # Assicura che da tastiera usando la combinazione
 # di tasti Ctrl-C termini in modo pulito tutti i thread generati

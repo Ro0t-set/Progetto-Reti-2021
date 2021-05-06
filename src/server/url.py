@@ -7,5 +7,4 @@ urlpatterns = [
     ("referti", "html/referti.html", views.referti),
     ("turni", "html/turni.html", views.turni),
     ("appuntamenti", "html/appuntamenti.html", views.appuntamenti),
-    ("info_pdf", "media/info.pdf", views.info_pdf)
 ]
