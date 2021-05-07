@@ -1,13 +1,14 @@
 import base64
 import login.login_request as login
+import random
 
 
 def get_username(request):
     if request.headers.get('Authorization') is not None:
         return str(base64.b64decode(request.headers.get('Authorization').split(' ')[1])).split(':')[0][2:] + \
                """
-        <a href="http://username:password@{host}">LogOut</a>
-        """.format(host = request.headers.get('Host'))
+        <a href="http://{rand_user}:{rand_pass}@{host}">LogOut</a>
+        """.format(host=request.headers.get('Host'), rand_user=random.randint(-1000, 1000), rand_pass=random.randint(-1000, 1000))
     else:
         return "no logged"
 
