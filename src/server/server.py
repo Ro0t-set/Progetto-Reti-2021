@@ -4,8 +4,11 @@ from http.server import BaseHTTPRequestHandler
 import socketserver
 import url
 
+# salva le sessioni degli utenti
+sessions = {}
+
 # Cartella contente tutti i media della pagina, non vengono effettuati controlli
-MEDIA = "meida"
+MEDIA = "/meida"
 
 # Legge il numero della porta dalla riga di comando
 if sys.argv[1:]:
@@ -13,7 +16,15 @@ if sys.argv[1:]:
 else:
     port = 8080
 
+
 class Handler(http.server.SimpleHTTPRequestHandler):
+
+    def do_AUTHHEAD(self):
+        self.send_response(401)
+        self.send_header('WWW-Authenticate', 'Basic realm=\"Test\"')
+        self.send_header('Content-type', 'text/html')
+
+        self.end_headers()
 
     def html(self):
         sub_path = self.path[1:]
@@ -40,17 +51,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-    def do_AUTHHEAD(self):
-        self.send_response(401)
-        self.send_header('WWW-Authenticate', 'Basic realm=\"Test\"')
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-
     def do_GET(self):
+        print(self.headers)
         if self.path[:6] == "/media":
             self.media()
         else:
             self.html()
+
+    def do_POST(self):
+        sub_path = self.path[1:]
+        for url_name in url.urlpatterns:
+            if url_name[0] == sub_path:
+                page = open(url_name[1]).read()
+                url_name[2](self, page)
+                self.do_HEAD()
 
 
 server = socketserver.ThreadingTCPServer(('', port), Handler)
