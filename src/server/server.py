@@ -81,7 +81,7 @@ server.allow_reuse_address = True
 def signal_handler(signal, frame):
     print('Exiting http server (Ctrl+C pressed)')
     try:
-        if (server):
+        if server:
             server.server_close()
     finally:
         sys.exit(0)
