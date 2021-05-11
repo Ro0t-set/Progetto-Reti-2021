@@ -1,25 +1,25 @@
 import base64
-import random
 from src.server.login.login_request import basic_access_authentication, login_required
 from src.server.login.password_validator import cookie_pwd_validator
 
 
 def get_username(request):
-    login = ""
+    log_string = ""
     if request.headers.get('Authorization') is not None:
-        login =  str(base64.b64decode(request.headers.get('Authorization').split(' ')[1])).split(':')[0][2:] + \
-               """
-        <a href="http://user:pas@{host}">LogOut</a>
-        """.format(host=request.headers.get('Host'))
+        log_string = str(base64.b64decode(request.headers.get('Authorization').split(' ')[1])).split(':')[0][2:] + \
+                """
+        <p>-> non e' possibile fare il logOut di questo protocollo</p>
+        """
 
-    if request.headers.get('Cookie') is None or request.headers.get('Cookie') == "pass=":
-        login = login + "classic login : <a href='http://{host}/logout'>LogOut</a>".format(
+    if request.headers.get('Cookie') is not None or request.headers.get('Cookie') != "pass=":
+        log_string = log_string + "classic login : <a href='http://user:pas@{host}/logout'>LogOut</a>".format(
             host=request.headers.get('Host'))
 
+    return log_string
 
-    return login
 
-@login_required
+
+@basic_access_authentication
 def index(request, page):
     return page.format(username=get_username(request))
 
@@ -42,13 +42,12 @@ def turni(request, page):
     return page.format(username=get_username(request))
 
 
-@login_required
+@basic_access_authentication
 def appuntamenti(request, page):
     return page.format(username=get_username(request))
 
 
 def login(request, page):
-
     if "POST" in request.requestline:
         content_length = int(request.headers['Content-Length'])  # <--- Gets the size of data
         post_data = request.rfile.read(content_length)  # <--- Gets the data itself
@@ -69,6 +68,5 @@ def login(request, page):
 def logout(request, page):
     request.send_response(301)
     request.send_header("Set-Cookie", "pass=")
-    request.send_header('Location', '/')
-    request.end_headers()
     return page
+
