@@ -63,8 +63,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         for url_name in url.urlpatterns:
             if url_name[0] == sub_path:
                 page = open(url_name[1]).read()
-                url_name[2](self, page)
+                page = url_name[2](self, page)
                 self.do_HEAD()
+                if page is not None:
+                    self.wfile.write(bytes(page, "utf8"))  # legge l'url e cerca nella cartella
 
 
 server = socketserver.ThreadingTCPServer(('', port), Handler)

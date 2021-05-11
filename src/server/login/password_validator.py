@@ -1,7 +1,7 @@
 import base64
 
 user = [
-    ("ciao", "ciao"),
+    ("username", "password"),
     ("admin", "administrator")
 ]
 
