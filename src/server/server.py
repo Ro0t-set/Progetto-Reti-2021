@@ -1,5 +1,6 @@
 import http
-import sys, signal
+import sys
+import signal
 from http.server import BaseHTTPRequestHandler
 import socketserver
 import url
@@ -63,7 +64,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 page = url_name[2](self, page)
                 self.do_HEAD()
                 if page is not None:
-                    self.wfile.write(bytes(page, "utf8")) 
+                    self.wfile.write(bytes(page, "utf8"))
 
 
 server = socketserver.ThreadingTCPServer(('', port), Handler)

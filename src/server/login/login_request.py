@@ -5,7 +5,7 @@ import src.server.login.password_validator as pwd
 def basic_access_authentication(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
-        #args[0] è la request
+        # args[0] è la request
         if args[0].headers.get('Authorization') is None:
             args[0].do_AUTHHEAD()
             pass
@@ -19,7 +19,6 @@ def basic_access_authentication(function):
 
 
 def login_required(function):
-
     @wraps(function)
     def wrapper(*args, **kwargs):
         # args[0] è la request
@@ -32,4 +31,3 @@ def login_required(function):
             return function(*args, **kwargs)
 
     return wrapper
-
