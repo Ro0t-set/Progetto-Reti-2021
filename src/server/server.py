@@ -4,11 +4,8 @@ from http.server import BaseHTTPRequestHandler
 import socketserver
 import url
 
-# salva le sessioni degli utenti
-sessions = {}
-
 # Cartella contente tutti i media della pagina, non vengono effettuati controlli
-MEDIA = "/meida"
+MEDIA = "/media"
 
 # Legge il numero della porta dalla riga di comando
 if sys.argv[1:]:
@@ -53,7 +50,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         print(self.headers)
-        if self.path[:6] == "/media":
+        if self.path[:6] == MEDIA:
             self.media()
         else:
             self.html()
@@ -66,7 +63,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 page = url_name[2](self, page)
                 self.do_HEAD()
                 if page is not None:
-                    self.wfile.write(bytes(page, "utf8"))  # legge l'url e cerca nella cartella
+                    self.wfile.write(bytes(page, "utf8")) 
 
 
 server = socketserver.ThreadingTCPServer(('', port), Handler)

@@ -1,4 +1,7 @@
 import views
+# 1) url da inserire nel sito
+# 2) Percorso del file
+# 3) Funzione associata al file
 urlpatterns = [
     ("", "html/index.html", views.index),
     ("login", "html/login.html", views.login),
