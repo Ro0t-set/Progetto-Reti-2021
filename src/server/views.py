@@ -1,6 +1,6 @@
 import base64
-from src.server.login.login_request import basic_access_authentication, login_required
-from src.server.login.password_validator import cookie_pwd_validator
+from login.login_request import basic_access_authentication, login_required
+from login.password_validator import cookie_pwd_validator
 
 
 def get_username(request):
